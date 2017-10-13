@@ -1,122 +1,127 @@
-//kOS Launch Functions v0.3.8
+//kOS Launch Functions v1.0.0
 
-PARAMETER orbit_heading.
+PARAMETER orbit_compass.
 PARAMETER orbit_altitude.
+PARAMETER launch_throttle.
+PARAMETER throttle_down.
+PARAMETER airspeed_threshold.
 
-SET prev_thrust TO MAXTHRUST.
-SET cruise_control TO 1.
-LOCK THROTTLE TO cruise_control.
+//Save the maximum thrust for staging calculation
+SET prev_thrust to MAXTHRUST.
 
-FUNCTION AUTO_STAGE{
-	PARAMETER prev_thrust.
+//Set a throttle safety threshold
+SET safe_throttle TO throttle_down.
 
-	LOCK cur_thrust to MAXTHRUST.
+//Set an airspeed safety threshold
+SET safe_speed TO airspeed_threshold.
 
-	IF cur_thrust < prev_thrust {
-		NOTIFY("INFO","Staging").
-		SET prev_thrust TO MAXTHRUST.
-		STAGE.
-	} ELSE {
-		NOTIFY("INFO","Not ready to stage.").
-	}
-}
+//Set the starting run_mode
+SET run_mode TO 1.
 
-//Gravity Turn Function
+//Preserve the bubble
+SET save_bubble TO 90.
+
+//Make the steering controllable
+LOCK STEERING TO HEADING(save_bubble,orbit_compass).
+
+LOCK radar_alt TO ALT:RADAR.
+
 FUNCTION GRAVITY_TURN {
 	PARAMETER compass.
 	PARAMETER bubble.
 	PARAMETER min_alt.
 
-	IF AIRSPEED > 300 AND THROTTLE > 0.45 {
-		SET cruise_control TO 0.45.
-		NOTIFY("WARN","Reached 300m/s, throttling back").
+	WAIT UNTIL AIRSPEED > safe_speed OR radar_alt >= min_alt.
+	SET save_bubble TO bubble.
+
+	IF AIRSPEED > safe_speed AND THROTTLE <> safe_throttle {
+		SET THROTTLE TO safe_throttle.
+		SET save_bubble TO bubble
 	}
-
-	AUTO_STAGE(prev_thrust).
-
-
-	WAIT UNTIL ALT:RADAR >= min_alt.
-	LOCK STEERING TO HEADING(compass,bubble).
 }
 
-FUNCTION CIRCULARIZE {
-	PARAMETER orbital_heading.
-	PARAMETER target_altitude.
-	PARAMETER apoapsis_eta.
+//Begin the launch profile
+UNTIL run_mode = 0 {
+	IF run_mode = 1{
+		
+		//Starts immediately after liftoff
+		GRAVITY_TURN(orbit_compass,85,1000).
+		SET run_mode TO 2
+		PERSIST("run_mode",run_mode).
 
-	NOTIFY("INFO","Circularizing.").
+	} ELSE IF run_mode = 2 {
 
-	NOTIFY("INFO","Holding on the horizon").
-	
-	RCS ON.
-	NOTIFY("INFO","RCS On").
+		//Starts at 1000m
+		GRAVITY_TURN(orbit_compass,80,2000).
+		SET run_mode TO 3
+		PERSIST("run_mode",run_mode).
 
-	GRAVITY_TURN(orbital_heading,0,0).
-	NOTIFY("INFO","Heading set at " + orbital_heading + ", 0, 0").
+	} ELSE IF run_mode = 3 {
 
-	IF ETA:APOAPSIS < 0 AND THROTTLE = 0 {
-		RUNPATH("0:/mp_abort_launch.ks").
+		//Starts at 2000m
+		GRAVITY_TURN(orbit_compass,70,5000).
+		SET run_mode TO 4
+		PERSIST("run_mode",run_mode).
+
+	} ELSE IF run_mode = 4 {
+
+		//Starts at 5000m
+		GRAVITY_TURN(orbit_compass,65,6000).
+		SET run_mode TO 5
+		PERSIST("run_mode",run_mode).
+
+	} ELSE IF run_mode = 5 {
+
+		//Starts at 6000m
+		GRAVITY_TURN(orbit_compass,60,7000).
+		SET run_mode TO 6
+		PERSIST("run_mode",run_mode).
+
+	} ELSE IF run_mode = 6 {
+
+		//Starts at 7000m
+		GRAVITY_TURN(orbit_compass,55,8000).
+		SET run_mode TO 7
+		PERSIST("run_mode",run_mode).
+
+	} ELSE IF run_mode = 7 {
+
+		//Starts at 8000m
+		GRAVITY_TURN(orbit_compass,50,9000).
+		SET run_mode TO 8
+		PERSIST("run_mode",run_mode).
+
+	} ELSE IF run_mode = 8 {
+
+		//Starts at 9000m
+		GRAVITY_TURN(orbit_compass,45,10000).
+		SET run_mode TO 9
+		PERSIST("run_mode",run_mode).
+
+	} ELSE IF run_mode = 9 {
+
+		//Starts at 10000m
+		
+		SET THROTTLE TO 1.
+		
+		WAIT UNTIL APOAPSIS >= orbit_altitude.
+
+		SET THROTTLE TO 0.
+
+		LOCK STEERING TO KILL.
+
+		WAIT UNTIL ETA:APOAPSIS <= 30.
+		LOCK STEERING TO HEADING(save_bubble,orbit_compass).
+
+		GRAVITY_TURN(orbit_compass,0,0).
+
+		SET THROTTLE TO 1.
+
+		WAIT UNTIL PERIAPSIS >= orbit_altitude.
+
+		SET THROTTLE TO 0.
+
+		SET run_mode TO 0.
+
 	}
-
-	WAIT UNTIL ETA:APOAPSIS <= apoapsis_eta.
-
-	SET cruise_control TO 1.
-
-	WAIT UNTIL PERIAPSIS >= target_altitude.
-
-	NOTIFY("INFO","Circularization, complete.").
-
-	RCS OFF.
-	NOTIFY("INFO","RCS Off").
 }
-
-//Lift to Orbit Function
-FUNCTION ATTAIN_ORBIT {
-	PARAMETER orbital_heading.
-	PARAMETER target_altitude.
-
-	
-	NOTIFY("INFO","Tilting to 90 degrees").
-	GRAVITY_TURN(orbital_heading,90,0).
-
-	NOTIFY("INFO","Tilting to 85 degrees").
-	GRAVITY_TURN(orbital_heading,85,2000).
-
-	NOTIFY("INFO","Tilting to 80 degrees").
-	GRAVITY_TURN(orbital_heading,80,3000).
-
-	NOTIFY("INFO","Tilting to 75 degrees").
-	GRAVITY_TURN(orbital_heading,75,4000).
-
-	NOTIFY("INFO","Tilting to 70 degrees").
-	GRAVITY_TURN(orbital_heading,70,5000).
-
-	NOTIFY("INFO","Tilting to 65 degrees").
-	GRAVITY_TURN(orbital_heading,65,6000).
-
-	NOTIFY("INFO","Tilting to 60 degrees").
-	GRAVITY_TURN(orbital_heading,60,7000).
-
-	NOTIFY("INFO","Tilting to 55 degrees").
-	GRAVITY_TURN(orbital_heading,55,8000).
-
-	NOTIFY("INFO","Tilting to 50 degrees").
-	GRAVITY_TURN(orbital_heading,50,9000).
-
-	NOTIFY("INFO","Tilting to 45 degrees").
-	GRAVITY_TURN(orbital_heading,45,10000).
-
-	UNTIL APOAPSIS >= target_altitude {
-		SET cruise_control TO 0.
-		NOTIFY("INFO","Waiting for apoapsis to reach target altitude").
-	}
-
-	NOTIFY("INFO","Apoapsis reached target").
-
-	CIRCULARIZE(orbital_heading,target_altitude,30).
-
-
-	NOTIFY("INFO","Orbit attained.").
-}
-
-ATTAIN_ORBIT(orbit_heading,orbit_altitude).
