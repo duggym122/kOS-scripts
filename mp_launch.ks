@@ -1,4 +1,4 @@
-//kOS Launch Functions v0.3.4
+//kOS Launch Functions v0.3.5
 
 PARAMETER orbit_heading.
 PARAMETER orbit_altitude.
@@ -48,6 +48,10 @@ FUNCTION CIRCULARIZE {
 
 	NOTIFY("INFO","Holding on the horizon").
 	GRAVITY_TURN(orbital_heading,0,0).
+
+	IF ETA:APOAPSIS < 0 AND THROTTLE = 0 {
+		RUNPATH("0:/mp_abort_launch.ks").
+	}
 
 	WAIT UNTIL ETA:APOAPSIS <= apoapsis_eta.
 
