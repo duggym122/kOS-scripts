@@ -162,6 +162,7 @@ IF MISSIONTIME < 5{
 							   "mp_launch.ks",
 							   "preflight_countdown.ks",
 							   "mp_science.ks",
+							   "mp_kerbit_deorbit.ks",
 							   mission_profile
 							  ).
 
