@@ -2,9 +2,6 @@
 
 //CONDITIONALS
 
-//Create a mission time timestamp
-LOCK mission_time TO "ET_" + MISSIONTIME.
-
 //FUNCTIONS
 
 //For system notifications
@@ -28,7 +25,7 @@ FUNCTION NOTIFY {
 
 	HUDTEXT(messagetext, 5, 2, 25, color, false).
 
-	LOG (mission_id + "," + mission_time + "," + messagetext) TO mission_log.
+	LOG (mission_id + "," + "ET_" + MISSIONTIME + "," + messagetext) TO mission_log.
 }
 
 //For radio messages
@@ -41,7 +38,7 @@ FUNCTION RADIO {
 
 	HUDTEXT("Radio Message: " + messagetext, 5, 2, 25, RGB(255,165,0), false).
 
-	LOG (mission_id + "," + mission_time + ",Radio Transcript: " + messagetext) TO mission_transcript.
+	LOG (mission_id + "," + "ET_" + MISSIONTIME + ",Radio Transcript: " + messagetext) TO mission_transcript.
 }
 
 //For KSC PA system announcements
@@ -53,7 +50,7 @@ FUNCTION ANNOUNCE {
 
 	HUDTEXT(messagetext, 5, 2, 25, RGB(255,165,0), false).
 
-	LOG (mission_id + "," + mission_time + "," + messagetext) TO mission_transcript.
+	LOG (mission_id + "," + "ET_" + MISSIONTIME + "," + messagetext) TO mission_transcript.
 }
 
 //Check if a given file exists on a given volume
@@ -162,7 +159,7 @@ IF MISSIONTIME < 5{
 							   "mp_launch.ks",
 							   "preflight_countdown.ks",
 							   "mp_science.ks",
-							   "mp_kerbit_deorbit.ks",
+							   "mp_kerbin_deorbit.ks",
 							   mission_profile
 							  ).
 
