@@ -15,3 +15,13 @@ FOR one_part IN all_parts{
 	}
 }
 RUNPATH("0:/mp_science",science_parts).
+
+SET period TO SHIP:ORBIT:PERIOD.
+
+SET start_moment TO TIMESPAN:SECONDS.
+
+SET duration TO (period * 10).
+
+WAIT UNTIL (TIMESPAN:SECONDS = (start_moment + duration)).
+
+RUNPATH("0:/mp_kerbin_deorbit.ks",0,12).
