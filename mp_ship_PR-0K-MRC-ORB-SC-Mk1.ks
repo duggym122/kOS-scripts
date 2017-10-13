@@ -1,4 +1,4 @@
-//kOS Ship-Specific Mission Profile v0.1.3
+//kOS Ship-Specific Mission Profile v0.1.4
 
 SET all_parts TO SHIP:PARTS.
 SET science_parts TO LIST().
@@ -14,7 +14,7 @@ FOR one_part IN all_parts{
 		}
 	}
 }
-RUNPATH("0:/mp_science",science_parts).
+//RUNPATH("0:/mp_science",science_parts).
 
 SET period TO SHIP:ORBIT:PERIOD.
 
