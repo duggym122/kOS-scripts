@@ -1,4 +1,4 @@
-//kOS Launch Functions v0.3.3
+//kOS Launch Functions v0.3.4
 
 PARAMETER orbit_heading.
 PARAMETER orbit_altitude.
@@ -8,16 +8,6 @@ SET cruise_control TO 1.
 LOCK THROTTLE TO cruise_control.
 
 FUNCTION AUTO_STAGE{
-	//LIST ENGINES IN engine_list.
-
-	//FOR engine IN engine_list{
-	//	IF ENGINE:FLAMEOUT{
-	//		RETURN TRUE.
-	//	} ELSE {
-	//		RETURN FALSE.
-	//	}
-	//}
-
 	PARAMETER prev_thrust.
 
 	LOCK cur_thrust to MAXTHRUST.
@@ -25,11 +15,10 @@ FUNCTION AUTO_STAGE{
 	IF cur_thrust < prev_thrust {
 		NOTIFY("INFO","Staging").
 		SET prev_thrust TO MAXTHRUST.
-		RETURN TRUE.
+		STAGE.
 	} ELSE {
-		RETURN FALSE.
+		NOTIFY("INFO","Not ready to stage.").
 	}
-
 }
 
 //Gravity Turn Function
@@ -43,9 +32,7 @@ FUNCTION GRAVITY_TURN {
 		NOTIFY("WARN","Reached 300m/s, throttling back").
 	}
 
-	IF AUTO_STAGE(prev_thrust) {
-		STAGE.
-	}
+	AUTO_STAGE(prev_thrust).
 
 
 	WAIT UNTIL ALT:RADAR >= min_alt.
