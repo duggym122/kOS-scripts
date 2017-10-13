@@ -1,10 +1,11 @@
-//kOS Launch Functions v0.3.0
+//kOS Launch Functions v0.3.3
 
 PARAMETER orbit_heading.
 PARAMETER orbit_altitude.
 
 SET prev_thrust TO MAXTHRUST.
 SET cruise_control TO 1.
+LOCK THROTTLE TO cruise_control.
 
 FUNCTION AUTO_STAGE{
 	//LIST ENGINES IN engine_list.
@@ -52,16 +53,20 @@ FUNCTION GRAVITY_TURN {
 }
 
 FUNCTION CIRCULARIZE {
+	PARAMETER orbital_heading.
 	PARAMETER target_altitude.
-	PARAMETER periapsis_eta.
+	PARAMETER apoapsis_eta.
 
 	NOTIFY("INFO","Circularizing.").
 
-	WAIT UNTIL ETA:PERIAPSIS <= periapsis_eta.
+	NOTIFY("INFO","Holding on the horizon").
+	GRAVITY_TURN(orbital_heading,0,0).
+
+	WAIT UNTIL ETA:APOAPSIS <= apoapsis_eta.
 
 	SET cruise_control TO 1.
 
-	WAIT UNTIL APOAPSIS >= target_altitude.
+	WAIT UNTIL PERIAPSIS >= target_altitude.
 
 	NOTIFY("INFO","Circularization, complete.").
 
@@ -71,8 +76,6 @@ FUNCTION CIRCULARIZE {
 FUNCTION ATTAIN_ORBIT {
 	PARAMETER orbital_heading.
 	PARAMETER target_altitude.
-
-	LOCK THROTTLE TO cruise_control.
 
 	
 	NOTIFY("INFO","Tilting to 90 degrees").
@@ -108,7 +111,6 @@ FUNCTION ATTAIN_ORBIT {
 	WAIT UNTIL APOAPSIS >= target_altitude.
 	SET cruise_control TO 0.
 
-	CIRCULARIZE(target_altitude,30).
 
 	NOTIFY("INFO","Orbit attained.").
 }
