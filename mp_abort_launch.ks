@@ -1,0 +1,60 @@
+// kOS launchabort v0.3.0
+
+//Set up for the emergency
+CLEARSCREEN.
+
+//Start abort sequence
+NOTIFY("ERROR","LAUNCH ABORT SEQUENCE TRIGGERED").
+
+IF ETA:PERIAPSIS < 4 {
+	NOTIFY("ERROR","CORRECTIVE CONTROL FAILURE - IMMEDIATE ABORT").
+	LOCK THROTTLE TO 0.
+	NOTIFY("ERROR","CUT MAIN ENGINES").
+} ELSE {
+	LOCK HEADING(0,0).
+	LOCK THROTTLE TO 0.5.
+	NOTIFY("ERROR","ATTEMPTING CORRECTIVE CONTROL").
+	WAIT 2.
+}
+//Find all the LES parts
+LOCK THROTTLE TO 0.
+FOR one_les IN les_list {
+	SET ship_les TO SHIP:PARTSNAMED(one_les).
+
+	IF ship_les:LENGTH = 0 {
+		//No LES on board, trigger abort immediately
+		LOCK THROTTLE TO 0.25.
+		LOCK HEADING(0,180).
+		NOTIFY("ERROR","SHUTTING DOWN MAIN ENGINES").
+		ABORT ON.
+		NOTIFY("ERROR","LES FAILURE, ATTEMPTING UNGUIDED ABORT").
+	} ELSE {
+		SET has_les TO TRUE.
+		ABORT ON.
+		NOTIFY("ERROR","LES FIRING, CAPSULE RELEASED").
+
+		WAIT UNTIL STAGE:SOLIDFUEL < 1.
+		NOTIFY("ERROR","LES SPENT").
+	}
+}
+CHUTES ON.
+NOTIFY("ERROR","CHUTES DEPLOYED").
+
+IF has_les {
+ STAGE.
+ NOTIFY("ERROR","LES RELEASED").
+}
+
+WAIT UNTIL VERTICALSPEED < 15. 
+NOTIFY("ERROR","CAPSULE AT SAFE VELOCITY").
+
+WAIT UNTIL ALT:RADAR < 10.
+NOTIFY("ERROR","CAPSULE TOUCHDOWN").
+
+UNTIL FALSE {
+	IF SHIP:ELECTRICCHARGE < 50 {
+		RADIO("KSA spacecraft" + SHIP:NAME + "Automated Distress Beacon","All open channels","Mayday, Mayday, we are losing power, final location is " + LATITUDE + ", " + LONGITUDE ).
+		SHUTDOWN.
+	}
+	RADIO("KSA spacecraft" + SHIP:NAME + "Automated Distress Beacon","All open channels","Mayday, Mayday, please render assistance at " + LATITUDE + ", " + LONGITUDE ).
+}
