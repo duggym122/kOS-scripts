@@ -1,4 +1,4 @@
-//kOS Launch Functions v0.3.5
+//kOS Launch Functions v0.3.8
 
 PARAMETER orbit_heading.
 PARAMETER orbit_altitude.
@@ -47,7 +47,12 @@ FUNCTION CIRCULARIZE {
 	NOTIFY("INFO","Circularizing.").
 
 	NOTIFY("INFO","Holding on the horizon").
+	
+	RCS ON.
+	NOTIFY("INFO","RCS On").
+
 	GRAVITY_TURN(orbital_heading,0,0).
+	NOTIFY("INFO","Heading set at " + orbital_heading + ", 0, 0").
 
 	IF ETA:APOAPSIS < 0 AND THROTTLE = 0 {
 		RUNPATH("0:/mp_abort_launch.ks").
@@ -61,6 +66,8 @@ FUNCTION CIRCULARIZE {
 
 	NOTIFY("INFO","Circularization, complete.").
 
+	RCS OFF.
+	NOTIFY("INFO","RCS Off").
 }
 
 //Lift to Orbit Function
@@ -99,8 +106,14 @@ FUNCTION ATTAIN_ORBIT {
 	NOTIFY("INFO","Tilting to 45 degrees").
 	GRAVITY_TURN(orbital_heading,45,10000).
 
-	WAIT UNTIL APOAPSIS >= target_altitude.
-	SET cruise_control TO 0.
+	UNTIL APOAPSIS >= target_altitude {
+		SET cruise_control TO 0.
+		NOTIFY("INFO","Waiting for apoapsis to reach target altitude").
+	}
+
+	NOTIFY("INFO","Apoapsis reached target").
+
+	CIRCULARIZE(orbital_heading,target_altitude,30).
 
 
 	NOTIFY("INFO","Orbit attained.").
