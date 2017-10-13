@@ -161,6 +161,7 @@ IF MISSIONTIME < 5{
 							   "utility_manage_parts.ks",
 							   "mp_launch.ks",
 							   "preflight_countdown.ks",
+							   "mp_science.ks",
 							   mission_profile
 							  ).
 
