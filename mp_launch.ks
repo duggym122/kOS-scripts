@@ -1,4 +1,4 @@
-//kOS Launch Functions v1.1.4
+//kOS Launch Functions v1.1.5
 
 PARAMETER orbit_compass.
 PARAMETER orbit_altitude.
@@ -8,7 +8,7 @@ PARAMETER airspeed_threshold.
 
 //Save the maximum thrust for staging calculation
 SET prev_thrust TO MAXTHRUST.
-LOCK cur_thrust TO MAXTHRUST.
+SET cur_thrust TO MAXTHRUST.
 
 //Set a throttle safety threshold
 SET safe_throttle TO throttle_down.
@@ -46,6 +46,13 @@ FUNCTION GRAVITY_TURN {
 
 //Begin the launch profile
 UNTIL run_mode = 0 {
+
+        SET cur_thrhust TO MAXTHRUST.
+        IF cur_thrust < (prev_thrust - 10) {
+	        SET prev_thrust TO cur_thrust.
+		STAGE.
+	}
+
 	IF run_mode = 1{
 		LOCK STEERING TO HEADING(90,orbit_compass).
 		//Starts immediately after liftoff
