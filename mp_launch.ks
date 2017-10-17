@@ -7,8 +7,8 @@ PARAMETER throttle_down.
 PARAMETER airspeed_threshold.
 
 //Save the maximum thrust for staging calculation
-SET prev_thrust TO MAXTHRUST.
-LOCK cur_thrust TO MAXTHRUST.
+LOCK prev_thrust TO MAXTHRUST.
+SET cur_thrust TO MAXTHRUST.
 
 //Set a throttle safety threshold
 SET safe_throttle TO throttle_down.
@@ -46,10 +46,12 @@ FUNCTION GRAVITY_TURN {
 
 //Begin the launch profile
 UNTIL run_mode = 0 {
+
 	IF cur_thrust < (prev_thrust - 10){
+        SET prev_thrust TO cur_thrust.
 		STAGE.
-		SET prev_thrust TO MAXTHRUST.
 	}
+
 	IF run_mode = 1{
 		LOCK STEERING TO HEADING(90,orbit_compass).
 		//Starts immediately after liftoff
@@ -148,5 +150,4 @@ UNTIL run_mode = 0 {
 		NOTIFY("INFO","Run Mode sequence complete").
 
 	}
-
 }
