@@ -1,4 +1,4 @@
-//kOS Launch Functions v1.1.5
+//kOS Launch Functions v1.1.6
 
 PARAMETER orbit_compass.
 PARAMETER orbit_altitude.
@@ -48,6 +48,7 @@ FUNCTION GRAVITY_TURN {
 UNTIL run_mode = 0 {
 	IF cur_thrust < (prev_thrust - 10){
 		STAGE.
+		SET prev_thrust TO MAXTHRUST.
 	}
 	IF run_mode = 1{
 		LOCK STEERING TO HEADING(90,orbit_compass).
