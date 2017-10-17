@@ -1,5 +1,10 @@
 //kOS Science Functions v0.1.0
 
+//NOTE: The reason this code accepts a pre-curated list of science parts is because a user may wish to perform different
+	// experiments at different stages within their mission. For example, they could create lists of atmospheric, 
+	// ground-based, or space-born experiments and run them separately or conditionally. Please do not submit any requests
+	// to change that functionality here, since it is intentional.
+
 //Takes in a list of science parts (allows the caller to decide what parts they want to run experiments for)
 PARAMETER science_parts_list.
 
