@@ -1,4 +1,4 @@
-//kOS Launch Functions v1.1.6
+//kOS Launch Functions v1.1.8
 
 PARAMETER orbit_compass.
 PARAMETER orbit_altitude.
@@ -47,9 +47,13 @@ FUNCTION GRAVITY_TURN {
 //Begin the launch profile
 UNTIL run_mode = 0 {
 
+	cur_thrust = MAXTHRUST.
+
 	IF cur_thrust < (prev_thrust - 10){
         SET prev_thrust TO cur_thrust.
+        NOTIFY("INFO","Triggering stage " + STAGE:NUMBER).
 		STAGE.
+		NOTIFY("INFO","Now on stage " + STAGE:NUMBER).
 	}
 
 	IF run_mode = 1{

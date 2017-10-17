@@ -7,6 +7,8 @@ RUNPATH("0:/mp_launch",90,60000,1,0.45,300).
 KSC_UPLOAD(mission_log).
 KSC_UPLOAD(mission_transcript).
 
+NOTIFY("INFO","Launch profile successfully completed.").
+
 FOR one_part IN all_parts{
 	FOR module_name IN one_part:MODULES{
 		IF module_name = "ScienceExperimentModule"{
@@ -15,7 +17,9 @@ FOR one_part IN all_parts{
 	}
 }
 RUNPATH("0:/mp_science",science_parts, FALSE).
+NOTIFY("INFO","Science mission profile successfully completed.").
 
+NOTIFY("INFO","Beginning orbital mission.").
 SET period TO SHIP:ORBIT:PERIOD.
 
 SET start_moment TO TIME:SECONDS.
@@ -24,4 +28,8 @@ SET duration TO (period * 10).
 
 WAIT UNTIL (TIME:SECONDS = (start_moment + duration)).
 
+NOTIFY("INFO","10 orbits successfully completed.").
+
+NOTIFY("INFO","Triggering deorbit profile.").
 RUNPATH("0:/mp_kerbin_deorbit.ks",0,12).
+NOTIFY("INFO","Deorbit profile successfully completed.").
