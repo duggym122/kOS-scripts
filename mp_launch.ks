@@ -7,8 +7,8 @@ PARAMETER throttle_down.
 PARAMETER airspeed_threshold.
 
 //Save the maximum thrust for staging calculation
-LOCK prev_thrust TO MAXTHRUST.
-SET cur_thrust TO MAXTHRUST.
+SET prev_thrust TO MAXTHRUST.
+LOCK cur_thrust TO MAXTHRUST.
 
 //Set a throttle safety threshold
 SET safe_throttle TO throttle_down.
