@@ -1,4 +1,4 @@
-//kOS Launch Functions v1.1.8
+//kOS Launch Functions v1.3.0
 
 PARAMETER orbit_compass.
 PARAMETER orbit_altitude.
@@ -19,35 +19,36 @@ SET safe_speed TO airspeed_threshold.
 //Set the starting run_mode
 SET run_mode TO 1.
 
-
-
-
-LOCK radar_alt TO ALT:RADAR.
+SET debug TO TRUE.
 
 FUNCTION GRAVITY_TURN {
 	PARAMETER compass.
 	PARAMETER bubble.
-	PARAMETER min_alt.
 
-	WAIT UNTIL AIRSPEED > safe_speed OR radar_alt >= min_alt.
-	SET save_bubble TO bubble.
-	NOTIFY("INFO","Ascent angle set to " + save_bubble).
-	
 	LOCK STEERING TO HEADING(compass,bubble).
-
+	NOTIFY("INFO","Ascent angle set to " + bubble).
 
 	IF AIRSPEED > safe_speed AND THROTTLE <> safe_throttle {
-		NOTIFY("WARN","Safe airspeed limit exceeded").
-
 		SET THROTTLE TO safe_throttle.
+		NOTIFY("WARN","Safe airspeed limit exceeded").
 		NOTIFY("INFO","Decreasing throttle to " + safe_throttle).
 	}
+
+	RETURN.
 }
 
 //Begin the launch profile
 UNTIL run_mode = 0 {
 
-	cur_thrust = MAXTHRUST.
+	SET cur_thrust TO MAXTHRUST.
+
+	IF debug {
+		CLEARSCREEN.
+		PRINT "Current Maxthrust:  " + MAXTHRUST.
+		PRINT "cur_thrust:         " + cur_thrust.
+		PRINT "prev_thrust:        " + prev_thrust.
+		PRINT "Run Mode:           " + run_mode.
+	}
 
 	IF cur_thrust < (prev_thrust - 10){
         SET prev_thrust TO cur_thrust.
@@ -58,72 +59,57 @@ UNTIL run_mode = 0 {
 
 	IF run_mode = 1{
 		LOCK STEERING TO HEADING(90,orbit_compass).
-		//Starts immediately after liftoff
-		NOTIFY("INFO","Triggering Run Mode 1").
+		IF ALT:RADAR > 1000{
+			NOTIFY("INFO","Triggering Run Mode 1").
+			GRAVITY_TURN(orbit_compass,85).
+			SET run_mode TO 2.
+			PERSIST("run_mode",run_mode).
+		}
 
-		GRAVITY_TURN(orbit_compass,85,1000).
-		SET run_mode TO 2.
-		PERSIST("run_mode",run_mode).
-
-	} ELSE IF run_mode = 2 {
-
-		//Starts at 1000m
+	} ELSE IF run_mode = 2 AND ALT:RADAR > 2000 {
 		NOTIFY("INFO","Triggering Run Mode 2").
-		GRAVITY_TURN(orbit_compass,80,2000).
+		GRAVITY_TURN(orbit_compass,80).
 		SET run_mode TO 3.
 		PERSIST("run_mode",run_mode).
 
-	} ELSE IF run_mode = 3 {
-
-		//Starts at 2000m
+	} ELSE IF run_mode = 3 AND ALT:RADAR > 5000 {
 		NOTIFY("INFO","Triggering Run Mode 3").
-		GRAVITY_TURN(orbit_compass,70,5000).
+		GRAVITY_TURN(orbit_compass,70).
 		SET run_mode TO 4.
 		PERSIST("run_mode",run_mode).
 
-	} ELSE IF run_mode = 4 {
-
-		//Starts at 5000m
+	} ELSE IF run_mode = 4 AND ALT:RADAR > 6000 {
 		NOTIFY("INFO","Triggering Run Mode 4").
-		GRAVITY_TURN(orbit_compass,65,6000).
+		GRAVITY_TURN(orbit_compass,65).
 		SET run_mode TO 5.
 		PERSIST("run_mode",run_mode).
 
-	} ELSE IF run_mode = 5 {
-
-		//Starts at 6000m
+	} ELSE IF run_mode = 5 AND ALT:RADAR > 7000 {
 		NOTIFY("INFO","Triggering Run Mode 5").
-		GRAVITY_TURN(orbit_compass,60,7000).
+		GRAVITY_TURN(orbit_compass,60).
 		SET run_mode TO 6.
 		PERSIST("run_mode",run_mode).
 
-	} ELSE IF run_mode = 6 {
-
-		//Starts at 7000m
+	} ELSE IF run_mode = 6 AND ALT:RADAR > 8000 {
 		NOTIFY("INFO","Triggering Run Mode 6").
-		GRAVITY_TURN(orbit_compass,55,8000).
+		GRAVITY_TURN(orbit_compass,55).
 		SET run_mode TO 7.
 		PERSIST("run_mode",run_mode).
 
-	} ELSE IF run_mode = 7 {
-
-		//Starts at 8000m
+	} ELSE IF run_mode = 7 AND ALT:RADAR > 9000 {
 		NOTIFY("INFO","Triggering Run Mode 7").
-		GRAVITY_TURN(orbit_compass,50,9000).
+		GRAVITY_TURN(orbit_compass,50).
 		SET run_mode TO 8.
-		PERSIST("run_mode",run_mode).
+		PERSIST("run_mode",run_mode).			
 
-	} ELSE IF run_mode = 8 {
-
-		//Starts at 9000m
+	} ELSE IF run_mode = 8 AND ALT:RADAR > 10000 {
 		NOTIFY("INFO","Triggering Run Mode 8").
-		GRAVITY_TURN(orbit_compass,45,10000).
+		GRAVITY_TURN(orbit_compass,45).
 		SET run_mode TO 9.
-		PERSIST("run_mode",run_mode).
+		PERSIST("run_mode",run_mode).	
 
 	} ELSE IF run_mode = 9 {
 
-		//Starts at 10000m
 		NOTIFY("INFO","Triggering Run Mode 9").
 		SET THROTTLE TO 1.
 		
