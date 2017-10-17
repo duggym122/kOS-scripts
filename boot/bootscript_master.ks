@@ -1,4 +1,4 @@
-// kOS Reusable Master Boot Script v0.2.4
+// kOS Reusable Master Boot Script v0.2.5
 
 //CONDITIONALS
 
@@ -169,7 +169,7 @@ IF MISSIONTIME < 5{
 		}
 	}
 
-	RUNPATH("0:/preflight_countdown").
+	RUNPATH("0:/preflight_countdown", TRUE).
 
 } ELSE {
 	//In the event we are not on a new mission, be sure to load the required variables from the persistence store

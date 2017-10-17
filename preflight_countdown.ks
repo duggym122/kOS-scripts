@@ -1,7 +1,37 @@
-// kOS countdown v0.2.5
+// kOS countdown v1.0.2
+
+PARAMETER skip.
 
 CLEARSCREEN.
 LOCK THROTTLE TO 0.
+
+IF skip = TRUE {
+	NOTIFY("WARN","Skipping countdown").
+	WAIT 5.
+
+	NOTIFY("WARN","Select mission profile").
+	SET mission_profile TO "mp_ship_" + SHIP:NAME + ".ks".
+	NOTIFY("WARN","Mission profile set to " + mission_profile).
+	WAIT 2.
+
+
+	LOCK STEERING TO HEADING (90,90).
+	NOTIFY("WARN","Steering locked to HEADING(90,90)").
+	WAIT 2.
+
+	STAGE.
+	NOTIFY("WARN","Fire main engines").
+	WAIT 2.
+
+	LOCK THROTTLE TO 1.
+	NOTIFY("WARN","Set throttle to full").
+
+	STAGE.
+	NOTIFY("WARN","Fire launch clamps").
+
+	RUNPATH(mission_profile).
+}
+
 
 NOTIFY("INFO", "Initating final countdown sequence").
 WAIT 3.
