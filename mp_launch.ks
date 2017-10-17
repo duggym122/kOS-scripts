@@ -1,4 +1,4 @@
-//kOS Launch Functions v1.1.4
+//kOS Launch Functions v1.1.5
 
 PARAMETER orbit_compass.
 PARAMETER orbit_altitude.
@@ -46,6 +46,9 @@ FUNCTION GRAVITY_TURN {
 
 //Begin the launch profile
 UNTIL run_mode = 0 {
+	IF cur_thrust < (prev_thrust - 10){
+		STAGE.
+	}
 	IF run_mode = 1{
 		LOCK STEERING TO HEADING(90,orbit_compass).
 		//Starts immediately after liftoff
@@ -144,25 +147,5 @@ UNTIL run_mode = 0 {
 		NOTIFY("INFO","Run Mode sequence complete").
 
 	}
-
-	PRINT "==PROFILE PARAMETERS==".
-	PRINT "Run Mode:        " + run_mode.
-	PRINT "Cur. Maxthrust:  " + cur_thrust.
-	PRINT "Prev. Maxthrust: " + prev_thrust.
-	PRINT "Safe Throttle:   " + safe_throttle.
-	PRINT "Safe Airspeed:   " + safe_speed.
-	PRINT "==CONTROL DATA==".
-	PRINT "Throttle:        " + THROTTLE.
-	PRINT "Heading:         " + orbit_compass.
-	PRINT "Angle:           " + save_bubble.
-	PRINT "SAS:             " + SAS.
-	PRINT "RCS:             " + RCS.
-	PRINT "==TELEMETRY==".
-	PRINT "Airspeed:        " + AIRSPEED.
-	PRINT "Altitude:        " + ALT:RADAR.
-	PRINT "Apoapsis:        " + APOAPSIS.
-	PRINT "ETA: Apoapsis:   " + ETA:APOAPSIS.
-	PRINT "Periapsis:       " + PERIAPSIS.
-	PRINT "ETA: Periapsis:  " + ETA:PERIAPSIS.
 
 }
