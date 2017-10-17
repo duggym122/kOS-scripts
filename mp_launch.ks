@@ -1,4 +1,4 @@
-//kOS Launch Functions v1.3.0
+//kOS Launch Functions v1.4.0
 
 PARAMETER orbit_compass.
 PARAMETER orbit_altitude.
@@ -109,28 +109,30 @@ UNTIL run_mode = 0 {
 		PERSIST("run_mode",run_mode).	
 
 	} ELSE IF run_mode = 9 {
-
 		NOTIFY("INFO","Triggering Run Mode 9").
 		SET THROTTLE TO 1.
-		
-		WAIT UNTIL APOAPSIS >= orbit_altitude.
+		SET run_mode TO 10.
+		PERSIST("run_mode",run_mode).
 
+	} ELSE IF run_mode = 10 AND APOAPSIS >= orbit_altitude {
 		SET THROTTLE TO 0.
 
 		RCS ON.
+
 		LOCK STEERING TO "kill".
 
-		WAIT UNTIL ETA:APOAPSIS <= 30.
-
-		LOCK STEERING TO HEADING(save_bubble,orbit_compass).
+		SET run_mode TO 11.
+		PERSIST("run_mode",run_mode).
+	} ELSE IF run_mode = 11 AND ETA:APOAPSIS <= 30 {
 		RCS OFF.
 
-		GRAVITY_TURN(orbit_compass,0,0).
+		GRAVITY_TURN(orbit_compass,0).
 
 		SET THROTTLE TO 1.
 
-		WAIT UNTIL PERIAPSIS >= orbit_altitude.
-
+		SET run_mode TO 12.
+		PERSIST("run_mode",run_mode).
+	} ELSE IF run_mode = 12 AND PERIAPSIS >= orbit_altitude {
 		NOTIFY("INFO","Orbit achieved").
 
 		SET THROTTLE TO 0.
@@ -138,6 +140,5 @@ UNTIL run_mode = 0 {
 		SET run_mode TO 0.
 
 		NOTIFY("INFO","Run Mode sequence complete").
-
 	}
 }
