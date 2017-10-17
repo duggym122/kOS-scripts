@@ -1,4 +1,4 @@
-// kOS Reusable Master Boot Script v0.2.3
+// kOS Reusable Master Boot Script v0.2.4
 
 //CONDITIONALS
 
@@ -159,7 +159,7 @@ IF MISSIONTIME < 5{
 							   "mp_launch.ks",
 							   "preflight_countdown.ks",
 							   "mp_science.ks",
-							   "mp_kerbin_deorbit.ks",
+							   "mp_deorbit_kerbin.ks",
 							   mission_profile
 							  ).
 
