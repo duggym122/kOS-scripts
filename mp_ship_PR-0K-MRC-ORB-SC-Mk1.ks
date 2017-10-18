@@ -1,4 +1,4 @@
-//kOS Ship-Specific Mission Profile v0.1.6
+//kOS Ship-Specific Mission Profile v0.1.7
 
 SET all_parts TO SHIP:PARTS.
 SET science_parts TO LIST().
@@ -23,16 +23,18 @@ FOR one_part IN all_parts{
 RUNPATH("0:/mp_science",science_parts, FALSE).
 NOTIFY("INFO","Science mission profile successfully completed.").
 
-NOTIFY("INFO","Beginning orbital mission.").
-SET period TO SHIP:ORBIT:PERIOD.
+//NOTIFY("INFO","Beginning orbital mission.").
+//SET period TO SHIP:ORBIT:PERIOD.
 
-SET start_moment TO TIME:SECONDS.
+//SET start_moment TO TIME:SECONDS.
 
-SET duration TO (period * orbits).
+//SET duration TO (period * orbits).
 
-WAIT UNTIL (TIME:SECONDS = (start_moment + duration)).
+//WAIT UNTIL (TIME:SECONDS = (start_moment + duration)).
 
-NOTIFY("INFO","10 orbits successfully completed.").
+//NOTIFY("INFO","10 orbits successfully completed.").
+
+WAIT 20.
 
 NOTIFY("INFO","Triggering deorbit profile.").
 RUNPATH("0:/mp_kerbin_deorbit.ks",0,12).

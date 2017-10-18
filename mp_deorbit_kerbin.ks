@@ -1,4 +1,4 @@
-//kOS Kerbin Deorbit Profile v0.1.0
+//kOS Kerbin Deorbit Profile v0.1.1
 
 PARAMETER return_stage.
 PARAMETER safe_airspeed.
@@ -22,6 +22,7 @@ IF cur_stage < return_stage {
 }
 
 UNTIL cur_stage = return_stage {
+	NOTIFY().
 	STAGE.
 }
 
@@ -32,7 +33,7 @@ IF STAGE:ABLATOR = 0 {
 }
 
 NOTIFY("INFO","Deploying chutes as it is safe.").
-UNTIL CHUTES AND AIRSPEED < safe_airspeed {
+UNTIL CHUTES {
 	WHEN (NOT CHUTESSAFE) THEN {
     	CHUTESSAFE ON.
 	}
@@ -41,11 +42,9 @@ UNTIL CHUTES AND AIRSPEED < safe_airspeed {
 		NOTIFY("INFO","All chutes deployed.").
 	}
 
-	IF AIRSPEED < safe_airspeed {
-		NOTIFY("WARN","Return stage exceeding safe airspeed").
-	}
-
 }
+
+WAIT UNTIL AIRSPEED < safe_airspeed.
 
 NOTIFY("INFO","Chutes deployed and return stage successfully slowed to safe airspeed.").
 
@@ -54,6 +53,6 @@ WAIT UNTIL ALT:RADAR < 2.
 NOTIFY("INFO","Splashdown achieved").
 
 UNTIL STAGE:ELECTRICCHARGE < (STAGE:ELECTRICCHARGE:CAPACITY/15){
-	RADIO("Automated Distress Beacon aboard " + SHIP:NAME,"All channels","We are splashed down at " + LATITUDE + ", " + LONGITUDE ).
+	RADIO("the Automated Distress Beacon aboard " + SHIP:NAME,"All channels","We are splashed down at " + LATITUDE + ", " + LONGITUDE ).
 	WAIT 5.
 }
